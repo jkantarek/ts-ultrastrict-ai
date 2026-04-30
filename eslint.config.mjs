@@ -101,6 +101,11 @@ export default tseslint.config(
       // File length: max 150 non-comment lines
       'max-lines': ['error', { max: 150, skipComments: true, skipBlankLines: false }],
 
+      // Low-complexity, DDD-aligned constraints
+      'complexity': ['error', { max: 7 }],
+      'max-lines-per-function': ['error', { max: 10, skipComments: true, skipBlankLines: false }],
+      'max-params': ['error', { max: 5 }],
+
       // All JSDoc must be executable @example doctests — no prose, no @param/@returns
       'local/jsdoc-examples-only': 'error',
     },
@@ -108,4 +113,13 @@ export default tseslint.config(
 
   // Disable formatting rules that conflict with Prettier
   prettier,
+
+  // Test files: relax function-length limit so describe/it blocks can hold
+  // multiple assertions without being split unnecessarily.
+  {
+    files: ['src/**/*.{test,spec}.{ts,tsx}'],
+    rules: {
+      'max-lines-per-function': ['error', { max: 60, skipComments: true, skipBlankLines: false }],
+    },
+  },
 );
