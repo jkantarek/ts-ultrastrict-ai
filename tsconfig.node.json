@@ -6,7 +6,6 @@
     "moduleResolution": "bundler",
     "skipLibCheck": true,
     "noEmit": true,
-
     /* Strict enough for config files */
     "strict": true,
     "noUnusedLocals": true,
