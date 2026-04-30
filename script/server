@@ -10,6 +10,21 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  echo "Usage: script/server [options]"
+  echo ""
+  echo "Starts the development server (requires a 'dev' script in package.json)."
+  echo ""
+  echo "Options:"
+  echo "  -h, --help   Show this help message"
+  echo ""
+  echo "To add a dev server to this library template:"
+  echo "  1. Install a server: pnpm add -D vite"
+  echo "  2. Add to package.json: \"dev\": \"vite\""
+  echo "  3. Re-run: script/server"
+  exit 0
+fi
+
 if grep -q '"dev"' package.json 2>/dev/null; then
   echo "==> Starting development server..."
   pnpm dev

@@ -6,6 +6,22 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  echo "Usage: script/lint [options]"
+  echo ""
+  echo "Runs all static analysis and formatting checks."
+  echo ""
+  echo "Options:"
+  echo "  -h, --help   Show this help message"
+  echo "  --fix        Auto-fix lint issues and reformat all files"
+  echo ""
+  echo "Without options, runs in check mode (non-destructive):"
+  echo "  1. TypeScript type check  (pnpm typecheck)"
+  echo "  2. ESLint zero-warnings   (pnpm lint)"
+  echo "  3. Prettier format check  (pnpm format:check)"
+  exit 0
+fi
+
 if [ "${1:-}" = "--fix" ]; then
   echo "==> Auto-fixing lint issues..."
   pnpm lint:fix
