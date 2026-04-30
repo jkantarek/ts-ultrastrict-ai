@@ -18,30 +18,38 @@ Ultra-strict TypeScript project template with full AI agent tooling (Speckit + G
 ## Quick start
 
 ```bash
-# Install dependencies
-pnpm install
-
-# Verify everything works
-pnpm typecheck
-pnpm lint
-pnpm format:check
-pnpm test:coverage
+# First-time setup: installs deps, sets up git hooks, verifies all gates
+script/bootstrap
 ```
 
 ## Scripts
 
-| Script               | Command                     | Description                 |
-| -------------------- | --------------------------- | --------------------------- |
-| `pnpm build`         | `tsc -p tsconfig.src.json`  | Compile TypeScript          |
-| `pnpm typecheck`     | `tsc --noEmit`              | Type-check without emitting |
-| `pnpm lint`          | `eslint . --max-warnings 0` | Lint (zero warnings)        |
-| `pnpm lint:fix`      | `eslint . --fix`            | Auto-fix lint issues        |
-| `pnpm format`        | `prettier --write .`        | Format all files            |
-| `pnpm format:check`  | `prettier --check .`        | Check formatting            |
-| `pnpm test`          | `vitest run`                | Run all tests once          |
-| `pnpm test:watch`    | `vitest`                    | Watch mode                  |
-| `pnpm test:coverage` | `vitest run --coverage`     | Tests + coverage report     |
-| `pnpm test:ui`       | `vitest --ui`               | Visual test UI              |
+All day-to-day operations use the `script/` folder ([Scripts to Rule Them All](https://github.com/github/scripts-to-rule-them-all)).
+Every script responds to `-h` / `--help`.
+
+| Script             | Purpose                                                 | Key flags                       |
+| ------------------ | ------------------------------------------------------- | ------------------------------- |
+| `script/bootstrap` | First-time setup: install deps, hooks, verify all gates |                                 |
+| `script/test`      | Run the test suite                                      | `--coverage`, `--watch`, `--ui` |
+| `script/lint`      | Typecheck + ESLint + Prettier                           | `--fix`, `--staged`             |
+| `script/server`    | Start the development server                            |                                 |
+| `script/console`   | Launch an interactive REPL                              | `--tsx` for TypeScript REPL     |
+| `script/update`    | Update dependencies and re-verify gates                 | `--latest`, `--interactive`     |
+| `script/ci`        | Run the full CI gate suite locally                      | `--no-color`                    |
+
+**`script/ci` is the canonical pre-push check** — it mirrors `.github/workflows/ci.yml` exactly.
+
+### pnpm scripts (direct)
+
+| Command              | Description                 |
+| -------------------- | --------------------------- |
+| `pnpm build`         | Compile TypeScript          |
+| `pnpm typecheck`     | Type-check without emitting |
+| `pnpm lint`          | ESLint (zero warnings)      |
+| `pnpm format`        | Format all files            |
+| `pnpm format:check`  | Check formatting            |
+| `pnpm test`          | Run all tests once          |
+| `pnpm test:coverage` | Tests + coverage report     |
 
 ## Quality gates
 
@@ -56,8 +64,8 @@ pnpm test:coverage  # All tests pass, ≥98% coverage
 
 These are enforced by:
 
-- **Pre-commit hook** (Husky + lint-staged) — blocks bad commits locally
-- **CI workflow** (`.github/workflows/ci.yml`) — blocks bad PRs
+- **Pre-commit hook** — `script/lint --staged` → lint-staged on staged files only
+- **CI workflow** — `script/ci` / `.github/workflows/ci.yml` — blocks bad PRs
 
 ## TypeScript strictness
 
@@ -93,12 +101,43 @@ export function add(a: number, b: number): number {
 
 Doctests are run by `vite-plugin-doctest` as part of every `pnpm test`.
 
+## Linting rules
+
+Beyond zero-warnings and no-`any`, the following structural rules are enforced:
+
+| Rule                        | Limit                         | Enforces                                  |
+| --------------------------- | ----------------------------- | ----------------------------------------- |
+| `max-lines`                 | 150 lines/file                | Domain-driven file extraction             |
+| `max-lines-per-function`    | 10 lines (source), 60 (tests) | Single-purpose functions                  |
+| `complexity`                | 7                             | Low cyclomatic complexity                 |
+| `max-params`                | 5                             | Group args into typed options objects     |
+| `local/jsdoc-examples-only` | —                             | Executable doctests only — no prose JSDoc |
+
+## Editor sync
+
+Formatting is locked at three layers so the editor never drifts from CI:
+
+1. `.editorconfig` — baseline indent/charset/newline for all editors
+2. `.vscode/settings.json` — per-language Prettier overrides (prevents VS Code's built-in JSON/YAML formatters from winning)
+3. `prettier --check` — enforced on staged files (pre-commit) and full repo (CI)
+
+Install the recommended extensions (`Extensions: Show Recommended Extensions`) to get `EditorConfig`, `Prettier`, `ESLint`, and `Vitest` support automatically.
+
 ## Project structure
 
 ```
 src/
 ├── index.ts          ← entry point (replace with your domain)
 └── index.test.ts     ← co-located black-box tests
+
+script/
+├── bootstrap         ← first-time setup
+├── test              ← run tests
+├── lint              ← lint + format check (also used by pre-commit hook)
+├── server            ← start dev server
+├── console           ← interactive REPL
+├── update            ← update dependencies
+└── ci                ← full local CI gate suite
 
 .github/
 ├── agents/           ← Speckit AI agents (16 total)
@@ -110,7 +149,7 @@ eslint-rules/
 └── jsdoc-examples-only.mjs   ← custom ESLint rule
 
 .husky/
-└── pre-commit        ← lint-staged hook
+└── pre-commit        ← delegates to script/lint --staged
 ```
 
 ## AI Agent workflow

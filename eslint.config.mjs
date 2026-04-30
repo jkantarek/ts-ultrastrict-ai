@@ -102,7 +102,7 @@ export default tseslint.config(
       'max-lines': ['error', { max: 150, skipComments: true, skipBlankLines: false }],
 
       // Low-complexity, DDD-aligned constraints
-      'complexity': ['error', { max: 7 }],
+      complexity: ['error', { max: 7 }],
       'max-lines-per-function': ['error', { max: 10, skipComments: true, skipBlankLines: false }],
       'max-params': ['error', { max: 5 }],
 
