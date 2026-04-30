@@ -63,7 +63,7 @@ Every script responds to `-h` / `--help` for full usage details.
 |---|---|---|
 | `script/bootstrap` | First-time setup: install deps, hooks, verify all gates | |
 | `script/test` | Run the test suite | `--coverage`, `--watch`, `--ui` |
-| `script/lint` | Typecheck + ESLint + Prettier check | `--fix` |
+| `script/lint` | Typecheck + ESLint + Prettier check | `--fix`, `--staged` |
 | `script/server` | Start the development server | |
 | `script/console` | Launch an interactive REPL | `--tsx` for TypeScript REPL |
 | `script/update` | Update dependencies and re-verify gates | `--latest`, `--interactive` |
