@@ -48,11 +48,30 @@ For fully autonomous implementation after tasks are defined:
 
 When starting a new project from this template:
 
-1. Run `pnpm install` to install all dependencies
-2. Run `pnpm prepare` to set up Husky git hooks
-3. Verify all gates pass: `pnpm typecheck && pnpm lint && pnpm format:check && pnpm test`
-4. Use `/speckit.git.initialize` to set up your initial commit
-5. Use `/speckit.git.remote` to push to a remote repository
+1. Run `script/bootstrap` — installs deps, sets up git hooks, and verifies all quality gates
+2. Use `/speckit.git.initialize` to set up your initial commit
+3. Use `/speckit.git.remote` to push to a remote repository
+
+---
+
+## Scripts (scripts-to-rule-them-all)
+
+All day-to-day operations are available as executable scripts in `script/`.
+Every script responds to `-h` / `--help` for full usage details.
+
+| Script | Purpose | Key flags |
+|---|---|---|
+| `script/bootstrap` | First-time setup: install deps, hooks, verify all gates | |
+| `script/test` | Run the test suite | `--coverage`, `--watch`, `--ui` |
+| `script/lint` | Typecheck + ESLint + Prettier check | `--fix` |
+| `script/server` | Start the development server | |
+| `script/console` | Launch an interactive REPL | `--tsx` for TypeScript REPL |
+| `script/update` | Update dependencies and re-verify gates | `--latest`, `--interactive` |
+| `script/ci` | Run the full CI gate suite locally | `--no-color` |
+
+**`script/ci` is the canonical pre-push check.** It mirrors `.github/workflows/ci.yml` exactly — if it passes locally, CI will pass.
+
+When instructed to verify the project is in a healthy state, always prefer `script/ci` over running individual `pnpm` commands.
 
 ---
 
