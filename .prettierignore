@@ -6,3 +6,5 @@ node_modules/
 .github/
 .specify/
 AGENTS.md
+.specify/
+pnpm-lock.yaml

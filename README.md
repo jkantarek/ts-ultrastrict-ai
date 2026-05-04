@@ -4,16 +4,17 @@ Ultra-strict TypeScript project template with full AI agent tooling (Speckit + G
 
 ## What's included
 
-| Category  | Tool                           | Purpose                                              |
-| --------- | ------------------------------ | ---------------------------------------------------- |
-| Language  | TypeScript 5.5+                | Ultra-strict compiler options                        |
-| Lint      | ESLint 9 + typescript-eslint   | Zero-warning policy, no `any`, explicit return types |
-| Format    | Prettier 3                     | Opinionated, consistent formatting                   |
-| Test      | Vitest 4 + vite-plugin-doctest | Unit tests + inline doctests                         |
-| Coverage  | @vitest/coverage-v8            | 98% threshold enforced                               |
-| Git hooks | Husky + lint-staged            | Pre-commit quality gate                              |
-| CI        | GitHub Actions                 | Full quality gate on every push/PR                   |
-| Agents    | Speckit (16 agents)            | Structured AI-driven feature development             |
+| Category  | Tool                              | Purpose                                                |
+| --------- | --------------------------------- | ------------------------------------------------------ |
+| Language  | TypeScript 5.5+                   | Ultra-strict compiler options                          |
+| Lint      | ESLint 9 + typescript-eslint      | Zero-warning policy, no `any`, explicit return types   |
+| Format    | Prettier 3                        | Opinionated, consistent formatting                     |
+| Test      | Vitest 4 + vite-plugin-doctest    | Unit tests + inline doctests                           |
+| Coverage  | @vitest/coverage-v8               | 98% threshold enforced                                 |
+| Git hooks | Husky + lint-staged               | Pre-commit, commit-msg, and pre-push quality gates     |
+| Commits   | commitlint + Conventional Commits | Enforces `feat:`, `fix:`, `chore:` etc. at commit time |
+| CI        | GitHub Actions                    | Full quality gate on every push/PR                     |
+| Agents    | Speckit (16 agents)               | Structured AI-driven feature development               |
 
 ## Quick start
 
@@ -65,7 +66,44 @@ pnpm test:coverage  # All tests pass, ≥98% coverage
 These are enforced by:
 
 - **Pre-commit hook** — `script/lint --staged` → lint-staged on staged files only
+- **Commit-msg hook** — `commitlint` → rejects non-[Conventional Commits](https://www.conventionalcommits.org/) messages
+- **Pre-push hook** — `pnpm test:coverage` → coverage gate runs before every push
 - **CI workflow** — `script/ci` / `.github/workflows/ci.yml` — blocks bad PRs
+
+## Conventional Commits
+
+Commit messages are enforced by [commitlint](https://commitlint.js.org/) via the `.husky/commit-msg` hook. All commits must follow the [Conventional Commits](https://www.conventionalcommits.org/) format:
+
+```
+<type>(<scope>): <subject>
+
+# Examples
+feat(auth): add OAuth2 login
+fix(parser): handle empty input
+chore(deps): update vitest to 4.2.0
+docs: update README with commit conventions
+```
+
+Allowed types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
+
+## Archiving specs
+
+When a feature is merged, archive its spec folder to a GitHub Issue to keep the repo clean:
+
+```bash
+.specify/scripts/bash/archive_spec.sh specs/001-my-feature <pr-number>
+```
+
+This will:
+
+1. Create a GitHub Issue with `plan.md` as the body
+2. Post all other spec files as issue comments
+3. Replace `plan.md` with a link to the issue
+4. Delete the remaining spec files
+5. Commit and push the cleanup
+6. Prepend `Closes #<issue>` to the PR body
+
+Requires `gh` CLI authenticated with repo access.
 
 ## TypeScript strictness
 
@@ -148,8 +186,14 @@ script/
 eslint-rules/
 └── jsdoc-examples-only.mjs   ← custom ESLint rule
 
+.specify/
+└── scripts/bash/
+    └── archive_spec.sh   ← archive a spec folder to a GitHub issue
+
 .husky/
-└── pre-commit        ← delegates to script/lint --staged
+├── pre-commit        ← delegates to script/lint --staged
+├── commit-msg        ← commitlint (Conventional Commits)
+└── pre-push          ← pnpm test:coverage
 ```
 
 ## AI Agent workflow
