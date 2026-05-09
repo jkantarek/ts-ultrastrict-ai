@@ -31,12 +31,14 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 RESET='\033[0m'
+NO_COLOR_FLAG=""
 
 if [[ "${1:-}" == "--no-color" ]]; then
   RED=''
   GREEN=''
   YELLOW=''
   RESET=''
+  NO_COLOR_FLAG="--no-color"
 fi
 
 FAILED=()
@@ -54,10 +56,25 @@ run_gate() {
   fi
 }
 
+run_coverage_gate() {
+  local name="$1"
+  local cmd="$2"
+  echo ""
+  echo "==> ${name}..."
+  if eval "$cmd"; then
+    echo -e "${GREEN}PASS${RESET} ${name}"
+  else
+    # Emit per-file, per-branch gap detail to help diagnose the failure
+    node script/coverage-detail.mjs ${NO_COLOR_FLAG} || true
+    echo -e "${RED}FAIL${RESET} ${name}"
+    FAILED+=("$name")
+  fi
+}
+
 run_gate "TypeScript type check" "pnpm typecheck"
 run_gate "ESLint (zero warnings)"  "pnpm lint"
 run_gate "Prettier format check"   "pnpm format:check"
-run_gate "Tests + coverage (>=98%)" "pnpm test:coverage"
+run_coverage_gate "Tests + coverage (>=98%)" "pnpm test:coverage"
 
 echo ""
 if [ ${#FAILED[@]} -eq 0 ]; then
