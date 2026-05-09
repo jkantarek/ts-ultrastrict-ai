@@ -28,15 +28,15 @@ script/bootstrap
 All day-to-day operations use the `script/` folder ([Scripts to Rule Them All](https://github.com/github/scripts-to-rule-them-all)).
 Every script responds to `-h` / `--help`.
 
-| Script             | Purpose                                                 | Key flags                       |
-| ------------------ | ------------------------------------------------------- | ------------------------------- |
-| `script/bootstrap` | First-time setup: install deps, hooks, verify all gates |                                 |
-| `script/test`      | Run the test suite                                      | `--coverage`, `--watch`, `--ui` |
-| `script/lint`      | Typecheck + ESLint + Prettier                           | `--fix`, `--staged`             |
-| `script/server`    | Start the development server                            |                                 |
-| `script/console`   | Launch an interactive REPL                              | `--tsx` for TypeScript REPL     |
-| `script/update`    | Update dependencies and re-verify gates                 | `--latest`, `--interactive`     |
-| `script/ci`        | Run the full CI gate suite locally                      | `--no-color`                    |
+| Script             | Purpose                                                 | Key flags                                            |
+| ------------------ | ------------------------------------------------------- | ---------------------------------------------------- |
+| `script/bootstrap` | First-time setup: install deps, hooks, verify all gates |                                                      |
+| `script/test`      | Run the test suite                                      | `--coverage`, `--coverage-detail`, `--watch`, `--ui` |
+| `script/lint`      | Typecheck + ESLint + Prettier                           | `--fix`, `--staged`                                  |
+| `script/server`    | Start the development server                            |                                                      |
+| `script/console`   | Launch an interactive REPL                              | `--tsx` for TypeScript REPL                          |
+| `script/update`    | Update dependencies and re-verify gates                 | `--latest`, `--interactive`                          |
+| `script/ci`        | Run the full CI gate suite locally                      | `--no-color`                                         |
 
 **`script/ci` is the canonical pre-push check** — it mirrors `.github/workflows/ci.yml` exactly.
 
@@ -175,6 +175,7 @@ script/
 ├── server            ← start dev server
 ├── console           ← interactive REPL
 ├── update            ← update dependencies
+├── coverage-detail.mjs ← parse coverage-final.json, emit per-branch gap detail
 └── ci                ← full local CI gate suite
 
 .github/

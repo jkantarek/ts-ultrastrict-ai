@@ -27,6 +27,17 @@ export default tseslint.config(
   ...tseslint.configs.strictTypeChecked.map((c) => ({ ...c, files: ['src/**/*.{ts,tsx}'] })),
   ...tseslint.configs.stylisticTypeChecked.map((c) => ({ ...c, files: ['src/**/*.{ts,tsx}'] })),
 
+  // Script files — Node.js environment with basic globals
+  {
+    files: ['script/*.mjs'],
+    languageOptions: {
+      globals: {
+        process: 'readonly',
+        console: 'readonly',
+      },
+    },
+  },
+
   // Tooling config files — parse with node tsconfig, light rules only
   {
     files: ['*.config.ts'],
