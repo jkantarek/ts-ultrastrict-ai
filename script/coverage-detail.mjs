@@ -1,18 +1,21 @@
-#!/usr/bin/env node
 // script/coverage-detail.mjs
 // Parse coverage/coverage-final.json and emit per-file, per-uncovered-branch
 // detail to help AI agents and developers act on coverage failures immediately.
 //
-// Usage: node script/coverage-detail.mjs [--no-color]
+// Usage: node script/coverage-detail.mjs [--no-color] [--threshold=<n>]
 //
 // Reads coverage/coverage-final.json written by @vitest/coverage-v8 (json reporter).
-// Emits files whose branch or function coverage falls below the 98% threshold,
+// Emits files whose branch or function coverage falls below the threshold (default 98),
 // listing each uncovered branch arm and uncovered function by line number.
+//
+// --threshold=<n>  Coverage threshold percentage (default: 98, keep in sync with
+//                  the thresholds in vitest.config.ts).
 
 import { existsSync, readFileSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 
-const THRESHOLD = 98;
+const thresholdArg = process.argv.find((a) => a.startsWith('--threshold='));
+const THRESHOLD = thresholdArg ? Number(thresholdArg.slice('--threshold='.length)) : 98;
 const COVERAGE_FILE = 'coverage/coverage-final.json';
 const USE_COLOR = !process.argv.includes('--no-color') && !process.env.NO_COLOR;
 
